@@ -1,0 +1,56 @@
+{% extends "index.html" %}
+
+{% block content %}
+    <div class="container m-3">
+        <h1 class="mt-5" style="text-align:center;">Summarization Results</h1>
+        <form method="post">
+            {{ form.hidden_tag() }}
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th scope="col"><input type="checkbox" id="select_all"></th>
+                        <th scope="col">Title</th>
+                        <th scope="col">Author</th>
+                        <th scope="col">Date</th>
+                        <th scope="col">Summary</th>
+                        <th scope="col">Tags</th>
+                        <th scope="col">Sentiment</th>
+                        <th scope="col">Score</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for res in results %}
+                        <tr>
+                            <td><input type="checkbox" class="article-checkbox" name="articles" value="{{ loop.index0 }}"></td>
+                            <td>{{ res.title }}</td>
+                            <td>{{ res.author }}</td>
+                            <td>{{ res.date }}</td>
+                            <td>{{ res.summary }}</td>
+                            <td>{{ res.tags }}</td>
+                            <td>{{ res.senti_label }}</td>
+                            <td>{{ res.senti_score }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <div class="mb-3">
+                {{ form.folder.label(class="form-label") }}
+                {{ form.folder(class="form-select") }}
+            </div>
+
+            <div class="mb-3">
+                {{ form.submit(class="btn btn-primary") }}
+            </div>
+        </form>
+    </div>
+
+<script>
+            document.getElementById('select_all').onclick = function() {
+            var checkboxes = document.getElementsByClassName('article-checkbox');
+            for (var checkbox of checkboxes) {
+                checkbox.checked = this.checked;
+            }
+            toggleButtons()}
+</script>
+{% endblock %}

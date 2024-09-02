@@ -1,0 +1,83 @@
+{% extends "index.html" %}
+
+{% block content %}
+    <div class="container mt-5">
+        <h1>Folder: {{ folder.name }}</h1>
+
+        <form method="post" action="{{ url_for('delete_article') }}">
+            <button type="submit" id="compare_button" formaction="{{ url_for('compare_articles') }}" class="btn btn-info mb-4" style="display: none; margin-left: 10px;">Compare</button>
+            <button type="submit" id="delete_button" class="btn btn-danger mb-4" style="display: none;">Delete</button>
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th scope="col"><input type="checkbox" id="select_all"></th>
+                            <th scope="col">Title</th>
+                            <th scope="col">Author</th>
+                            <th scope="col">Date</th>
+                            <th scope="col">Summary</th>
+                            <th scope="col">Tags</th>
+                            <th scope="col">Sentiment</th>
+                            <th scope="col">Score</th>
+                            <th scope="col">URL</th>
+                            <th scope="col"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for article in articles %}
+                            <tr>
+                                <td><input type="checkbox" name="article_ids" value="{{ article.id }}" class="article-checkbox"></td>
+                                <td>{{ article.title }}</td>
+                                <td>{{ article.author }}</td>
+                                <td>{{ article.date }}</td>
+                                <td>{{ article.summary }}</td>
+                                <td>{{ article.tags }}</td>
+                                <td>{{ article.senti_label }}</td>
+                                <td>{{ article.senti_score }}</td>
+                                <td><a href="{{ article.url }}" target="_blank">Link</a></td>
+                                <td><a href="{{ url_for('edit_article', article_id=article.id) }}" class="btn btn-primary btn-sm";>Edit</a></td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('select_all').onclick = function() {
+            var checkboxes = document.getElementsByClassName('article-checkbox');
+            for (var checkbox of checkboxes) {
+                checkbox.checked = this.checked;
+            }
+            toggleButtons();
+        }
+
+        var checkboxes = document.getElementsByClassName('article-checkbox');
+        for (var checkbox of checkboxes) {
+            checkbox.onclick = function() {
+                toggleButtons();
+            }
+        }
+
+        function toggleButtons() {
+            var checkboxes = document.getElementsByClassName('article-checkbox');
+            var deleteButton = document.getElementById('delete_button');
+            var compareButton = document.getElementById('compare_button');
+            var isChecked = false;
+            for (var checkbox of checkboxes) {
+                if (checkbox.checked) {
+                    isChecked = true;
+                    break;
+                }
+            }
+            if (isChecked) {
+                deleteButton.style.display = 'inline-block';
+                compareButton.style.display = 'inline-block';
+            } else {
+                deleteButton.style.display = 'none';
+                compareButton.style.display = 'none';
+            }
+        }
+    </script>
+{% endblock %}

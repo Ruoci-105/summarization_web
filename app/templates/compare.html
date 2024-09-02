@@ -1,0 +1,110 @@
+{% extends "index.html" %}
+
+{% block title %}Compare Articles{% endblock %}
+
+{% block content %}
+<h1 class="mt-5" style="text-align:center">Compare Articles</h1>
+<br/>
+    {% if positive_articles %}
+    <h2 style="text-align:center">Positive Articles</h2>
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th scope="col">Title</th>
+                    <th scope="col">Author</th>
+                    <th scope="col">Date</th>
+                    <th scope="col">Summary</th>
+                    <th scope="col">Sentiment</th>
+                    <th scope="col">Score</th>
+                    <th scope="col">Tags</th>
+                    <th scope="col">URL</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for article in positive_articles %}
+                    <tr>
+                        <td>{{ article.title }}</td>
+                        <td>{{ article.author }}</td>
+                        <td>{{ article.date }}</td>
+                        <td>{{ article.summary }}</td>
+                        <td>{{ article.senti_label }}</td>
+                        <td>{{ article.senti_score }}</td>
+                        <td>{{ article.tags }}</td>
+                        <td><a href="{{ article.url }}" target="_blank">Link</a></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% endif %}
+    </div>
+
+    {% if negative_articles %}
+    <h2 style="text-align:center">Negative Articles</h2>
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th scope="col">Title</th>
+                    <th scope="col">Author</th>
+                    <th scope="col">Date</th>
+                    <th scope="col">Summary</th>
+                    <th scope="col">Sentiment</th>
+                    <th scope="col">Score</th>
+                    <th scope="col">Tags</th>
+                    <th scope="col">URL</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for article in negative_articles %}
+                    <tr>
+                        <td>{{ article.title }}</td>
+                        <td>{{ article.author }}</td>
+                        <td>{{ article.date }}</td>
+                        <td>{{ article.summary }}</td>
+                        <td>{{ article.senti_label }}</td>
+                        <td>{{ article.senti_score }}</td>
+                        <td>{{ article.tags }}</td>
+                        <td><a href="{{ article.url }}" target="_blank">Link</a></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+
+        </table>
+    </div>
+    {% endif %}
+
+    {% if neutral_articles %}
+    <h2 style="text-align:center">Neutral Articles</h2>
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th scope="col">Title</th>
+                    <th scope="col">Author</th>
+                    <th scope="col">Date</th>
+                    <th scope="col">Summary</th>
+                    <th scope="col">Sentiment</th>
+                    <th scope="col">Score</th>
+                    <th scope="col">Tags</th>
+                    <th scope="col">URL</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for article in neutral_articles %}
+                    <tr>
+                        <td>{{ article.title }}</td>
+                        <td>{{ article.author }}</td>
+                        <td>{{ article.date }}</td>
+                        <td>{{ article.summary }}</td>
+                        <td>{{ article.senti_label }}</td>
+                        <td>{{ article.senti_score }}</td>
+                        <td>{{ article.tags }}</td>
+                        <td><a href="{{ article.url }}" target="_blank">Link</a></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+{% endblock %}

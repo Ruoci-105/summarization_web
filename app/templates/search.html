@@ -1,0 +1,37 @@
+{% extends 'index.html' %}
+
+{% block content %}
+    <div class="container">
+        <h1 class="mt-5">Search News</h1>
+        <form method="POST" action="{{ url_for('search') }}">
+            {{form.hidden_tag()}}
+            <div class="mb-3">
+                <label for="keyword" class="form-label">keyword：</label>
+                {{form.search(class="form-control")}}
+            </div>
+            <div class="mb-3">
+                {{ form.submit(class="btn btn-primary") }}
+            </div>
+        </form>
+
+        <div class="mt-4">
+            <h3>Result</h3>
+            {% if error_message %}
+                <div class="alert alert-danger">{{ error_message }}</div>
+            {% endif %}
+            {% if news %}
+                {% for article in news %}
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ article['title'] }}</h5>
+                            <p class="card-text">{{ article['description'] }}</p>
+                            <a href="{{ article['url'] }}" class="btn btn-secondary" target="_blank">Read more</a>
+                        </div>
+                    </div>
+                {% endfor %}
+
+            {% endif %}
+        </div>
+    </div>
+
+{% endblock %}

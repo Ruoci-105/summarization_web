@@ -1,0 +1,71 @@
+{% extends "index.html" %}
+
+{% block content %}
+<body>
+<div class="container">
+    <h1 class="mt-5" style="text-align:center;">Summarization and Sentiment Analysis</h1>
+    <form method="post" action=" ">
+        {{ form.hidden_tag() }}
+        {{ count_form.hidden_tag() }}
+        <div class="mb-3 length">
+            {{form.url1.label}}
+            {{ form.url1(class="form-control") }}
+        </div>
+        <div class="mb-3" id="url2" style="display: none; ">
+            {{form.url2.label}}
+            {{ form.url2(class="form-control") }}
+        </div>
+        <div class="mb-3 " id="url3" style="display: none;">
+            {{form.url3.label}}
+            {{ form.url3(class="form-control") }}
+        </div>
+        <div class="mb-3 " id="url4" style="display: none;">
+            {{form.url4.label}}
+            {{ form.url4(class="form-control") }}
+        </div>
+        <div class="mb-3 " id="url5" style="display: none;">
+            {{form.url5.label}}
+            {{ form.url5(class="form-control") }}
+        </div>
+        <div class="mb-3">
+            <button type="button" class="btn btn-secondary" id="add_button">Add</button>
+        </div>
+
+    <div class="mb-3" style="width: 30%">
+        {{ count_form.min_count.label(class="form-label") }}
+        {{ count_form.min_count(class="form-control") }}
+    </div>
+    <div class="mb-3" style="width: 30%">
+        {{ count_form.max_count.label(class="form-label") }}
+        {{ count_form.max_count(class="form-control") }}
+    </div>
+    <div class="mb-3">
+    {{ form.submit(class="btn btn-primary") }}
+    </div>
+</form>
+</div>
+
+<script type="text/javascript">
+    document.getElementById('add_button').onclick = function() {
+        var url2Field = document.getElementById('url2');
+        var url3Field = document.getElementById('url3');
+        var url4Field = document.getElementById('url4');
+        var url5Field = document.getElementById('url5');
+
+        if (url2Field.style.display === 'none') {
+            url2Field.style.display = 'block';
+        }
+        else if (url3Field.style.display === 'none') {
+            url3Field.style.display = 'block';
+        }
+        else if (url4Field.style.display === 'none') {
+            url4Field.style.display = 'block';
+        }
+        else if (url5Field.style.display === 'none') {
+            url5Field.style.display = 'block';
+            this.style.display = 'none';
+        }
+    };
+
+</script>
+{% endblock %}

@@ -1,0 +1,6 @@
+wtforms~=3.1.2
+keybert~=0.8.5
+requests~=2.32.3
+flask~=3.0.3
+werkzeug~=3.0.3
+transformers~=4.42.3
