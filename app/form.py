@@ -47,7 +47,7 @@ class StoreForm(FlaskForm):
     submit = SubmitField("Save")
 
 class SearchForm(FlaskForm):
-    search = StringField('Search article',
+    search = StringField('Insert Keyword:',
                               render_kw={"placeholder": "Search article"})
     submit = SubmitField('Search')
 

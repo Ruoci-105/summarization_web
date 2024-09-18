@@ -4,13 +4,13 @@
     <div class="container">
         <h1 class="mt-5">Search News</h1>
         <form method="POST" action="{{ url_for('search') }}">
-            {{form.hidden_tag()}}
+            {{searchform.hidden_tag()}}
             <div class="mb-3">
-                <label for="keyword" class="form-label">keyword：</label>
-                {{form.search(class="form-control")}}
+                <label for="keyword" class="searchform-label">keyword：</label>
+                {{searchform.search(class="form-control")}}
             </div>
             <div class="mb-3">
-                {{ form.submit(class="btn btn-primary") }}
+                {{ searchform.submit(class="btn btn-primary") }}
             </div>
         </form>
 
@@ -26,12 +26,32 @@
                             <h5 class="card-title">{{ article['title'] }}</h5>
                             <p class="card-text">{{ article['description'] }}</p>
                             <a href="{{ article['url'] }}" class="btn btn-secondary" target="_blank">Read more</a>
+                             <button class="btn btn-info" onclick="copyToClipboard('{{ article['url'] }}')">Copy URL</button>
                         </div>
                     </div>
                 {% endfor %}
 
-            {% endif %}
+                    {% endif %}
         </div>
     </div>
+        <script>
+        function copyToClipboard(url) {
+            // Create a temporary textarea element to hold the URL
+            var tempInput = document.createElement('textarea');
+            tempInput.value = url;
+            document.body.appendChild(tempInput);
 
+            // Select the text and copy it to the clipboard
+            tempInput.select();
+            tempInput.setSelectionRange(0, 99999); // For mobile devices
+            document.execCommand('copy');
+
+            // Remove the temporary element after copying
+            document.body.removeChild(tempInput);
+
+            // Optionally alert the user
+            alert('URL copied');
+        }
+    </script>
+    
 {% endblock %}

@@ -11,7 +11,9 @@ from app.senti_analysis import senti_analysis
 from app.tags import generate_tags
 from app.models import User, Article, Folder
 
+API_URL = 'https://newsapi.org/v2/everything?apiKey={api_key}&sources={sources}&q={keyword}'
 
+API_KEY = '334c886103a34224b2cc3bef7b74b8b4'
 
 @app.route('/', methods=['GET', 'POST'])
 def login():
@@ -21,9 +23,8 @@ def login():
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.username.data).first()
         login_user(user)
-        return redirect(url_for('login'))
         flash('Login successful!', 'success')
-        return redirect(url_for('search'))
+        return redirect(url_for('summarization'))
     return render_template('login.html', form=form)
 
 @app.route('/logout')
@@ -34,7 +35,7 @@ def logout():
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if current_user.is_authenticated:
-        return redirect(url_for('search'))
+        return redirect(url_for('summarization'))
     form = RegistrationForm()
     if form.validate_on_submit():
         new_user = User(username=form.username.data, email=form.email.data,
@@ -52,17 +53,20 @@ def register():
 @app.route('/summarization', methods=['GET', 'POST'])
 @login_required
 def summarization():
-    form = UrlForm()
+    urlform = UrlForm()
     count_form = WordCountForm()
-    errors = []
     urls = []
     results = []
-    if form.validate_on_submit():
-        url1 = form.url1.data
-        url2 = form.url2.data
-        url3 = form.url3.data
-        url4 = form.url4.data
-        url5 = form.url5.data
+    news_data = []
+    error_message = None
+    searchform = SearchForm()
+
+    if urlform.validate_on_submit():
+        url1 = urlform.url1.data
+        url2 = urlform.url2.data
+        url3 = urlform.url3.data
+        url4 = urlform.url4.data
+        url5 = urlform.url5.data
         urls.append(url1)
         if url2:
             urls.append(url2)
@@ -83,7 +87,7 @@ def summarization():
             content = article.maintext
             summary = generate_summary(content, max_count, min_count)
             tags = generate_tags(content)
-            label, score = senti_analysis(content)
+            label, score = senti_analysis(summary)
             try:
                 results.append({
                     'url': url,
@@ -96,11 +100,42 @@ def summarization():
                     'tags': tags
                 })
             except Exception as e:
-                error_message = str(e)
-                errors.append(error_message)
+                flash(f'A result error occurred: {str(e)}', 'danger')
+
         session['results'] = results
         return redirect(url_for('result'))
-    return render_template('summarization.html', form=form, count_form=count_form)
+
+    elif searchform.validate_on_submit():
+        keyword = searchform.search.data
+        selected_sources = request.form.getlist('sources')
+
+        sources_str = ','.join(selected_sources)
+
+        api_url = API_URL.format(api_key=API_KEY, sources=sources_str, keyword=keyword or "")
+
+        try:
+            response = requests.get(api_url)
+            response.raise_for_status()
+            content_type = response.headers.get('Content-Type')
+
+            if 'application/json' in content_type:
+                articles = response.json().get('articles', [])
+                if articles:
+                    news_data = sorted(articles, key=lambda x: x['publishedAt'], reverse=True)
+                else:
+                    error_message = 'No articles found for the keyword.'
+            else:
+                error_message = f'Invalid content type: {content_type}'
+                news_data = [{'title': 'Error', 'description': error_message, 'url': '#'}]
+        except requests.exceptions.RequestException as e:
+            error_message = f'Error retrieving news: {str(e)}'
+            news_data = [{'title': 'Error', 'description': error_message, 'url': '#'}]
+        except ValueError as e:
+            error_message = f'Error parsing JSON: {str(e)}'
+            news_data = [{'title': 'Error', 'description': error_message, 'url': '#'}]
+
+    return render_template('summarization.html', urlform=urlform, count_form=count_form, news=news_data,
+                           error_message=error_message, searchform=searchform)
 
 
 @app.route('/result', methods=['GET', "POST"])
@@ -299,44 +334,7 @@ def compare_articles():
 
 
 
-API_URL = 'https://newsapi.org/v2/everything?apiKey={api_key}&sources={sources}&q={keyword}'
 
-API_KEY = '334c886103a34224b2cc3bef7b74b8b4'
 
-@app.route('/search', methods=['GET', 'POST'])
-def search():
-    news_data = []
-    error_message = None
-    form = SearchForm()
-    if form.validate_on_submit():
-        keyword = form.search.data
-        selected_sources = request.form.getlist('sources')
-
-        sources_str = ','.join(selected_sources)
-
-        api_url = API_URL.format(api_key=API_KEY, sources=sources_str, keyword=keyword or "")
-
-        try:
-            response = requests.get(api_url)
-            response.raise_for_status()
-            content_type = response.headers.get('Content-Type')
-
-            if 'application/json' in content_type:
-                articles = response.json().get('articles', [])
-                if articles:
-                    news_data = sorted(articles, key=lambda x: x['publishedAt'], reverse=True)
-                else:
-                    error_message = 'No articles found for the keyword.'
-            else:
-                error_message = f'Invalid content type: {content_type}'
-                news_data = [{'title': 'Error', 'description': error_message, 'url': '#'}]
-        except requests.exceptions.RequestException as e:
-            error_message = f'Error retrieving news: {str(e)}'
-            news_data = [{'title': 'Error', 'description': error_message, 'url': '#'}]
-        except ValueError as e:
-            error_message = f'Error parsing JSON: {str(e)}'
-            news_data = [{'title': 'Error', 'description': error_message, 'url': '#'}]
-
-    return render_template('search.html', news=news_data, error_message=error_message, form=form)
 
 
