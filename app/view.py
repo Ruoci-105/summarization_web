@@ -1,3 +1,4 @@
+import os
 from app import app, db
 from newsplease import NewsPlease
 from app.form import (UrlForm, WordCountForm, LoginForm, RegistrationForm, StoreForm, FolderForm, EditArticleForm,
@@ -13,7 +14,7 @@ from app.models import User, Article, Folder
 
 API_URL = 'https://newsapi.org/v2/everything?apiKey={api_key}&sources={sources}&q={keyword}'
 
-API_KEY = '334c886103a34224b2cc3bef7b74b8b4'
+API_KEY = os.getenv("API_KEY")
 
 @app.route('/', methods=['GET', 'POST'])
 def login():
@@ -22,6 +23,9 @@ def login():
     form = LoginForm()
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.username.data).first()
+        if user is None or not user.check_password(form.password.data):
+            flash('Invalid username or password', 'danger')
+            return redirect(url_for('login'))
         login_user(user)
         flash('Login successful!', 'success')
         return redirect(url_for('summarization'))
@@ -76,6 +80,7 @@ def summarization():
             urls.append(url4)
         if url5:
             urls.append(url5)
+
         max_count = count_form.max_count.data
         min_count = count_form.min_count.data
         for url in urls:
@@ -106,6 +111,7 @@ def summarization():
         return redirect(url_for('result'))
 
     elif searchform.validate_on_submit():
+
         keyword = searchform.search.data
         selected_sources = request.form.getlist('sources')
 
@@ -154,7 +160,7 @@ def result():
         for index in selected_articles:
             article = results[int(index)]
             article['folder_id'] = folder_id
-            exist_article = Article.query.filter_by(url=article['url'], user_id=current_user.id).first()
+            exist_article = Article.query.filter_by(url=article['url'], user_id=current_user.id, folder_id=folder_id).first()
             if exist_article:
                 replace_articles.append({'new': article, 'old_id': exist_article.id})
             else:
@@ -320,14 +326,11 @@ def edit_article(article_id):
 @login_required
 def compare_articles():
     article_ids = request.form.getlist('article_ids')
-    if not article_ids:
-        flash('No articles selected for comparison.', 'warning')
-        return redirect(url_for('my_article'))
-
-    articles = Article.query.filter(Article.id.in_(article_ids)).all()
-    positive_articles = sorted([article for article in articles if article.senti_label == 'Positive'], key=lambda x: x.senti_score, reverse=True)
-    negative_articles = sorted([article for article in articles if article.senti_label == 'Negative'], key=lambda x: x.senti_score, reverse=True)
-    neutral_articles = sorted([article for article in articles if article.senti_label == 'Neutral'], key=lambda x: x.senti_score, reverse=True)
+    if article_ids:
+        articles = Article.query.filter(Article.id.in_(article_ids)).all()
+        positive_articles = sorted([article for article in articles if article.senti_label == 'Positive'], key=lambda x: x.senti_score, reverse=True)
+        negative_articles = sorted([article for article in articles if article.senti_label == 'Negative'], key=lambda x: x.senti_score, reverse=True)
+        neutral_articles = sorted([article for article in articles if article.senti_label == 'Neutral'], key=lambda x: x.senti_score, reverse=True)
 
     return render_template('compare.html', positive_articles=positive_articles,
                            negative_articles=negative_articles, neutral_articles=neutral_articles)

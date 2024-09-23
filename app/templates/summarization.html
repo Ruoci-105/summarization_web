@@ -1,97 +1,97 @@
 {% extends "index.html" %}
 
 {% block content %}
-<body>
-<div class="container">
 
-    <h1 class="mt-5" style="text-align:center;">Summarization and Sentiment Analysis</h1>
+    <div class="container">
 
-    <form method="post" action=" ">
-        {{ urlform.hidden_tag() }}
-        {{ count_form.hidden_tag() }}
-        <div class="mb-3 length">
-            {{urlform.url1.label}}
-            {{ urlform.url1(class="form-control", id="url_1")}}
-        </div>
-        <div class="mb-3" id="url2">
-            {{urlform.url2.label}}
-            {{ urlform.url2(class="form-control", id="url_2")}}
-        </div>
-        <div class="mb-3" id="url3">
-            {{urlform.url3.label}}
-            {{ urlform.url3(class="form-control", id="url_3") }}
-        </div>
-        <div class="mb-3" id="url4">
-            {{urlform.url4.label}}
-            {{ urlform.url4(class="form-control", id="url_4") }}
-        </div>
-        <div class="mb-3" id="url5">
-            {{urlform.url5.label}}
-            {{ urlform.url5(class="form-control", id="url_5") }}
-        </div>
+        <h1 class="mt-5" style="text-align:center;">Summarization and Sentiment Analysis</h1>
+        <p class="mt-3" style="font-size: 23px;text-align:center;">Paste links or use Search function below to find the news<p>
+        <form method="post" action="{{ url_for('summarization') }}">
+            {{ urlform.hidden_tag() }}
+            {{ count_form.hidden_tag() }}
+            <div class="mb-3 length">
+                {{urlform.url1.label}}
+                {{ urlform.url1(class="form-control", id="url_1" )}}
+            </div>
+            <div class="mb-3" id="url2">
+                {{urlform.url2.label}}
+                {{ urlform.url2(class="form-control", id="url_2")}}
+            </div>
+            <div class="mb-3" id="url3">
+                {{urlform.url3.label}}
+                {{ urlform.url3(class="form-control", id="url_3") }}
+            </div>
+            <div class="mb-3" id="url4">
+                {{urlform.url4.label}}
+                {{ urlform.url4(class="form-control", id="url_4") }}
+            </div>
+            <div class="mb-3" id="url5">
+                {{urlform.url5.label}}
+                {{ urlform.url5(class="form-control", id="url_5") }}
+            </div>
 
-    <div class="mb-3" style="width: 30%">
-        {{ count_form.min_count.label(class="form-label") }}
-        {{ count_form.min_count(class="form-control") }}
-    </div>
-    <div class="mb-3" style="width: 30%">
-        {{ count_form.max_count.label(class="form-label") }}
-        {{ count_form.max_count(class="form-control") }}
-    </div>
-    <div class="mb-3">
-    {{ urlform.submit(class="btn btn-primary") }}
-    </div>
-
-    <h3>Search News</h3>
-    </form>
-
-    <form method="POST" action="{{ url_for('summarization') }}">
-        {{ searchform.hidden_tag() }}
-        <div class="mb-3">
-            {{ searchform.search.label(class="form-label") }}
-            {{ searchform.search(class="form-control") }}
+        <div class="mb-3" style="width: 30%">
+            {{ count_form.min_count.label(class="form-label") }}
+            {{ count_form.min_count(class="form-control") }}
+        </div>
+        <div class="mb-3" style="width: 30%">
+            {{ count_form.max_count.label(class="form-label") }}
+            {{ count_form.max_count(class="form-control") }}
         </div>
         <div class="mb-3">
-            {{ searchform.submit(class="btn btn-primary") }}
+        {{ urlform.submit(class="btn btn-primary") }}
         </div>
-    </form>
 
-    <div class="mt-4">
-        <h3>Result</h3>
-        {% if error_message %}
-            <div class="alert alert-danger">{{ error_message }}</div>
-        {% endif %}
-        {% if news %}
-            {% for article in news %}
-                <div class="card mb-3">
-                    <div class="card-body">
-                        <h5 class="card-title">{{ article['title'] }}</h5>
-                        <p class="card-text">{{ article['description'] }}</p>
-                        <a href="{{ article['url'] }}" class="btn btn-secondary" target="_blank">Read more</a>
-                        <button class="btn btn-info" onclick="copyURLInPut('{{ article['url'] }}')">Paste URL</button>
+        <h3>Search News</h3>
+        </form>
+
+        <form method="POST" action="{{ url_for('summarization') }}">
+            {{ searchform.hidden_tag() }}
+            <div class="mb-3">
+                {{ searchform.search.label(class="form-label") }}
+                {{ searchform.search(class="form-control") }}
+            </div>
+            <div class="mb-3">
+                {{ searchform.submit(class="btn btn-primary") }}
+            </div>
+        </form>
+
+        <div class="mt-4">
+            <h3>Result</h3>
+            {% if error_message %}
+                <div class="alert alert-danger">{{ error_message }}</div>
+            {% endif %}
+            {% if news %}
+                {% for article in news %}
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ article['title'] }}</h5>
+                            <p class="card-text">{{ article['description'] }}</p>
+                            <a href="{{ article['url'] }}" class="btn btn-secondary" target="_blank">Read more</a>
+                            <button class="btn btn-info" onclick="copyURLInPut('{{ article['url'] }}')">Paste URL</button>
+                        </div>
                     </div>
-                </div>
-            {% endfor %}
-        {% endif %}
+                {% endfor %}
+            {% endif %}
+        </div>
+
     </div>
 
-</div>
-
-<script>
-    function copyURLInPut(url) {
-        if (document.getElementById('url_1').value === "") {
-            document.getElementById('url_1').value = url;
-        } else if (document.getElementById('url_2').value === "") {
-            document.getElementById('url_2').value = url;
-        } else if (document.getElementById('url_3').value === "") {
-            document.getElementById('url_3').value = url;
-        } else if (document.getElementById('url_4').value === "") {
-            document.getElementById('url_4').value = url;
-        } else if (document.getElementById('url_5').value === "") {
-            document.getElementById('url_5').value = url;
-        } else {
-            alert("Can't add more URLs");
+    <script>
+        function copyURLInPut(url) {
+            if (document.getElementById('url_1').value === "") {
+                document.getElementById('url_1').value = url;
+            } else if (document.getElementById('url_2').value === "") {
+                document.getElementById('url_2').value = url;
+            } else if (document.getElementById('url_3').value === "") {
+                document.getElementById('url_3').value = url;
+            } else if (document.getElementById('url_4').value === "") {
+                document.getElementById('url_4').value = url;
+            } else if (document.getElementById('url_5').value === "") {
+                document.getElementById('url_5').value = url;
+            } else {
+                alert("Can't add more URLs");
+            }
         }
-    }
-</script>
+    </script>
 {% endblock %}

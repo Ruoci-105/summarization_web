@@ -22,12 +22,6 @@ class LoginForm(FlaskForm):
     password = PasswordField('Password', validators=[DataRequired()])
     submit = SubmitField('Sign In')
 
-    def validate_login(self, username, password):
-        user = User.query.filter_by(username.data).first()
-        if user is None or not user.check_password(password.data):
-            raise ValidationError('Invalid User name or Password. Please Try again.')
-
-
 
 
 class RegistrationForm(FlaskForm):
@@ -38,8 +32,8 @@ class RegistrationForm(FlaskForm):
     submit = SubmitField('Register')
 
     def validate_email(self, email):
-        user = User.query.filter_by(email=email.data).first()
-        if user:
+        existing_mail = User.query.filter_by(email=email.data).first()
+        if existing_mail:
             raise ValidationError('Email is Already Registered. Please Try Again.')
 
 class StoreForm(FlaskForm):
