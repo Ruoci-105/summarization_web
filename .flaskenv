@@ -1,5 +1,0 @@
-FLASK_APP=run.py
-FLASK_ENV=development
-FLASK_DEBUG=1
-SECRET_KEY=54b'WR#&f&+%78er0we=%799eww+#7^90-;s'
-API_KEY='334c886103a34224b2cc3bef7b74b8b4'

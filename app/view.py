@@ -207,9 +207,6 @@ def confirm_replace():
         current_article = replace_articles[0]
         old_article = Article.query.get(current_article['old_id'])
         new_article = current_article['new']
-
-
-
         confirm_key = f'confirm_{replace_articles.index(current_article)}'
 
         if confirm_key in request.form:
